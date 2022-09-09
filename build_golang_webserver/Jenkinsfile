@@ -26,7 +26,7 @@ pipeline {
         script {
 
 
-          dockerImage = docker.build(registryName + ":go-websample$BUILD_NUMBER", "-f build_golang_webserver/Golang/Dockerfile .")
+          dockerImage = docker.build(registryName + ":$BUILD_NUMBER", "-f build_golang_webserver/Golang/Dockerfile .")
 
         }
       }
