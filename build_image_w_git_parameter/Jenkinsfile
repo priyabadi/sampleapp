@@ -3,6 +3,7 @@ pipeline {
   environment {
     registry = "aksmigrationstudy"
     registryUrl = "aksmigrationstudy.azurecr.io"
+    registryCredential = "ACR"
     dockerImage = ""
  }
 
@@ -28,7 +29,7 @@ pipeline {
     stage('Push Image') {
       steps{
         script {
-          docker.withRegistry( 'http://${registryUrl}', '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' ) {
+          docker.withRegistry( 'http://${registryUrl}', 'registryCredential' ) {
             dockerImage.push()  
             }
           }
