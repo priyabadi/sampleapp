@@ -1,9 +1,10 @@
 pipeline {
 
   environment {
-    registry = "spinningops/go-image-webserver"
+    registry = "aksmigrationstudy"
+    registryUrl = "aksmigrationstudy.azurecr.io"
     dockerImage = ""
-  }
+ }
 
   agent any
 
@@ -11,8 +12,8 @@ pipeline {
 
     stage('Checkout Source') {
       steps {
-        git branch: "main",
-        url: 'git@github.com:spinningops/JenkinsCI.git'
+        git branch: "master",
+        url: 'https://github.com/priyabadi/sampleapp.git'
       }
     }
 
@@ -27,7 +28,7 @@ pipeline {
     stage('Push Image') {
       steps{
         script {
-          docker.withRegistry( 'https://registry.hub.docker.com', '978cd482-3ecb-49dc-afeb-f485adf161aa' ) {
+          docker.withRegistry( 'http://${registryUrl}', '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' ) {
             dockerImage.push()  
             }
           }
