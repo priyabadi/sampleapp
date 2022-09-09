@@ -1,0 +1,64 @@
+pipeline {
+
+  environment {
+    //registry = "spinningops/go-websample"
+	registryName = "aksmigrationstudy"
+    registryUrl = "aksmigrationstudy.azurecr.io"
+    registryCredential = "ACR"
+    dockerImage = ""
+  }
+
+  agent any
+        
+
+  stages {
+
+    stage('Checkout Source') {
+      steps {
+        git branch: "main",
+          // credentialsId: '064af216-d6d6-4932-9e81-6ee83aaf7eb8',
+        //   url: 'git@github.com:spinningops/spinningops-blog.git'
+          url: 'git@github.com:spinningops/JenkinsCI.git'
+      }
+    }
+
+
+    stage('Build image') {
+      steps {
+        script {
+
+
+          dockerImage = docker.build(registryName + ":go-websample$BUILD_NUMBER", "-f build_golang_webserver/Golang/Dockerfile .")
+
+        }
+      }
+    }
+
+    stage('Push Image') {
+      steps{
+        script {
+          docker.withRegistry( 'http://${registryUrl}", registryCredential'  ) {
+            dockerImage.push()
+                
+            }
+          }
+        }
+      }
+
+	// Stopping Docker containers for cleaner Docker run
+     stage('stop previous containers') {
+         steps {
+            sh 'docker ps -f name=aksmigrationstudy -q | xargs --no-run-if-empty docker container stop'
+            sh 'docker container ls -a -fname=aksmigrationstudy -q | xargs -r docker container rm'
+         }
+       }
+      
+    stage('Docker Run') {
+     steps{
+         script {
+                sh 'docker run -d -p 8096:5000 --rm --name aksmigrationstudy ${registryUrl}/${registryName}'
+            }
+      }
+    }
+    }
+}
